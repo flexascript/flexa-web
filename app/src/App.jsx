@@ -17,8 +17,9 @@ println("Nice to meet you, " + name + '!');
   const textareaRef = useRef(null);
   const userId = useRef(uuidv4());
 
-  useEffect(() => {
-    const socket = new WebSocket('ws://localhost:3002');
+  useEffect(() => {    
+    const wsBase = `ws://${window.location.host.split(':')[0]}:4001/flexa-server/ws`;
+    const socket = new WebSocket(wsBase);
     socketRef.current = socket;
 
     socket.onopen = () => console.log('WebSocket connected');

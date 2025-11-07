@@ -1,0 +1,19 @@
+{
+  "public": "dist",
+  "cleanUrls": true,
+  "directoryListing": false,
+  "headers": [
+    {
+      "source": "**",
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "upgrade-insecure-requests; default-src 'self' https: data: blob: 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; connect-src 'self' https: wss: ws:;"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    { "source": "/flexa-ide/**", "destination": "/index.html" }
+  ]
+}

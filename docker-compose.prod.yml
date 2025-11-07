@@ -1,0 +1,26 @@
+services:
+  frontend:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    ports:
+      - "127.0.0.1:3000:3000"  # Restringe para localhost
+    networks:
+      - flexa-network
+
+  backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "127.0.0.1:4000:4000"  # Restringe para localhost
+      - "127.0.0.1:4001:4001"  # Restringe para localhost
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./server/temp:/app/temp
+    networks:
+      - flexa-network
+
+networks:
+  flexa-network:
+    driver: bridge
