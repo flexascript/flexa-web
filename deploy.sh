@@ -1,10 +1,7 @@
 #!/bin/bash
 
-echo "Construindo imagem do interpretador..."
-docker build -t flexa-interpreter-image ./server
-
-echo "Construindo e iniciando containers Flexa IDE..."
-docker compose -f docker-compose.prod.yml up --build -d
+echo "Construindo e iniciando containers Flexa Web"
+docker compose -f docker-compose.yml up --build -d
 
 echo "Recarregando configuração do nginx..."
 sudo nginx -t && sudo systemctl reload nginx
