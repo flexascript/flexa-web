@@ -13,7 +13,8 @@ COPY interpreter/ /app/interpreter/
 RUN chmod +x /app/interpreter/flexa
 
 # Stage 2: Node.js Backend
-FROM node:18-alpine
+FROM node:25-alpine
+RUN apk update && apk upgrade --no-cache
 
 # Install Docker CLI
 RUN apk add --no-cache docker
