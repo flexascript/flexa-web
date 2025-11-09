@@ -13,11 +13,13 @@ println("Nice to meet you, " + name + '!');
   const [consoleText, setConsoleText] = useState('');
   const [inputStart, setInputStart] = useState(0);
   const [allowInput, setAllowInput] = useState(false);
+  const [editorHeight, setEditorHeight] = useState(60); // percent height of editor
   const socketRef = useRef(null);
   const textareaRef = useRef(null);
   const userId = useRef(uuidv4());
+  const isResizing = useRef(false);
 
-  useEffect(() => {    
+  useEffect(() => {
     const wsBase = `ws://${window.location.host.split(':')[0]}:8080/flexa-server/ws`;
     const socket = new WebSocket(wsBase);
     socketRef.current = socket;
@@ -34,8 +36,7 @@ println("Nice to meet you, " + name + '!');
       }
     };
 
-    socket.onclose = () => console.log('WebSocket disconected');
-
+    socket.onclose = () => console.log('WebSocket disconnected');
     return () => socket.close();
   }, []);
 
@@ -44,8 +45,10 @@ println("Nice to meet you, " + name + '!');
       const newText = prev + text;
       setTimeout(() => {
         setInputStart(newText.length);
-        textareaRef.current.focus();
-        textareaRef.current.setSelectionRange(newText.length, newText.length);
+        if (textareaRef.current) {
+          textareaRef.current.focus();
+          textareaRef.current.setSelectionRange(newText.length, newText.length);
+        }
       }, 0);
       return newText;
     });
@@ -62,64 +65,84 @@ println("Nice to meet you, " + name + '!');
     }));
   };
 
+  const handleStop = () => {
+    if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+      socketRef.current.send(JSON.stringify({
+        type: 'stop',
+        userId: userId.current
+      }));
+      setAllowInput(false);
+      appendToConsole('\nProcess stopped by user.\n');
+    }
+  };
+
   const handleChange = (e) => {
     const value = e.target.value;
     if (value.length < inputStart) return;
-
-    setConsoleText(prev => {
-      const fixed = prev.slice(0, inputStart);
-      return fixed + value.slice(inputStart);
-    });
+    setConsoleText(prev => prev.slice(0, inputStart) + value.slice(inputStart));
   };
 
   const handleKeyDown = (e) => {
-    if (!allowInput){
+    if (!allowInput) {
       e.preventDefault();
       return;
     }
-
     const cursorPos = textareaRef.current.selectionStart;
-
-    // prevent move cursor to before current input
     if (cursorPos < inputStart) {
       e.preventDefault();
       textareaRef.current.setSelectionRange(consoleText.length, consoleText.length);
     }
-
     if (e.key === 'Backspace' && cursorPos <= inputStart) {
       e.preventDefault();
     }
-
     if (e.key === 'Enter') {
       e.preventDefault();
       const input = consoleText.slice(inputStart);
-      socketRef.current.send(JSON.stringify({
-        type: 'input',
-        data: input
-      }));
+      socketRef.current.send(JSON.stringify({ type: 'input', data: input }));
       appendToConsole('\n');
     }
   };
 
+  // --- handle resize ---
+  const handleMouseDown = () => (isResizing.current = true);
+  const handleMouseUp = () => (isResizing.current = false);
+  const handleMouseMove = (e) => {
+    if (!isResizing.current) return;
+    const containerHeight = window.innerHeight;
+    const newHeight = (e.clientY / containerHeight) * 100;
+    if (newHeight > 10 && newHeight < 90) setEditorHeight(newHeight);
+  };
+
+  useEffect(() => {
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, []);
+
   return (
     <div className="ide-container">
       <div className="topbar">
-        <button className="topbar-btn" onClick={handleRun}>▶ Run</button>
+        <button className="topbar-btn run" onClick={handleRun}>▶ Run</button>
+        <button className="topbar-btn stop" onClick={handleStop}>⏹ Stop</button>
         <div className="vertical-div"></div>
         <a className="topbar-btn" target="_blank" href="https://flexa-script.github.io/">🗎 Docs</a>
         <a className="topbar-btn" target="_blank" href="https://github.com/flexa-script">🌐 GitHub</a>
         <a className="topbar-btn" target="_blank" href="https://github.com/flexa-script/interpreter">🌐 Interpreter</a>
       </div>
 
-      <div className="editor-container">
+      <div className="editor-container" style={{ height: `${editorHeight}%` }}>
         <Editor
-          // height="100%"
           defaultLanguage="go"
           theme="vs-dark"
           value={code}
           onChange={(value) => setCode(value)}
         />
       </div>
+
+      <div className="resizer" onMouseDown={handleMouseDown}></div>
 
       <textarea
         ref={textareaRef}
@@ -128,6 +151,7 @@ println("Nice to meet you, " + name + '!');
         onKeyDown={handleKeyDown}
         className="terminal-textarea"
         spellCheck={false}
+        style={{ height: `${100 - editorHeight - 6}%` }}
       />
     </div>
   );
