@@ -146,7 +146,6 @@ app.listen(4000, '0.0.0.0', () => {
   console.log('Test URL: http://localhost:4000/');
 });
 
-// Tratamento de erros não capturados
 process.on('uncaughtException', (error) => {
   console.error('Uncaught Exception:', error);
 });

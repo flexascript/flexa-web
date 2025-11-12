@@ -13,7 +13,7 @@ println("Nice to meet you, " + name + '!');
   const [consoleText, setConsoleText] = useState('');
   const [inputStart, setInputStart] = useState(0);
   const [allowInput, setAllowInput] = useState(false);
-  const [editorHeight, setEditorHeight] = useState(60); // percent height of editor
+  const [editorHeight, setEditorHeight] = useState(70); // percent height of editor
   const socketRef = useRef(null);
   const textareaRef = useRef(null);
   const userId = useRef(uuidv4());
@@ -142,8 +142,9 @@ println("Nice to meet you, " + name + '!');
         <button className="topbar-btn stop" onClick={handleStop}>⏹ Stop</button>
         <div className="vertical-div"></div>
         <a className="topbar-btn" target="_blank" href="https://flexascript.github.io/">🗎 Docs</a>
-        <a className="topbar-btn" target="_blank" href="https://github.com/flexascript">🌐 GitHub</a>
-        <a className="topbar-btn" target="_blank" href="https://github.com/flexascript/interpreter">🌐 Interpreter</a>
+        <a className="topbar-btn" target="_blank" href="https://flexascript.github.io/">💡 Examples</a>
+        <a className="topbar-btn" target="_blank" href="https://github.com/flexascript/interpreter">⚙️ Actual Interpreter</a>
+        <a className="topbar-btn" target="_blank" href="https://github.com/flexascript">🌐 FlexaScript GitHub</a>
       </div>
 
       <div className="editor-container" style={{ height: `${editorHeight}%` }}>
@@ -155,16 +156,17 @@ println("Nice to meet you, " + name + '!');
         />
       </div>
 
-      <div className="resizer" onMouseDown={handleMouseDown}></div>
+      <div className="resizer" onMouseDown={handleMouseDown}><span>• • •</span></div>
 
       <textarea
+        id="console"
         ref={textareaRef}
         value={consoleText}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
         className="terminal-textarea"
         spellCheck={false}
-        style={{ height: `${100 - editorHeight - 6}%` }}
+        style={{ height: `calc(${100 - editorHeight}% - 57px)` }}
       />
     </div>
   );
