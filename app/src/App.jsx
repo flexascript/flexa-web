@@ -21,7 +21,10 @@ println("Nice to meet you, " + name + '!');
   const isRunning = useRef(false);
 
   useEffect(() => {
-    const wsBase = `ws${isHttps() ? 's' : ''}://${window.location.host.split(':')[0]}:8080/flexa-server/ws`;
+    const wsBase = isHttps() ?
+      `wss://homeserver.trout-universe.ts.net/flexa-server/ws`
+      :
+      `ws://localhost:8080/flexa-server/ws`;
     const socket = new WebSocket(wsBase);
     socketRef.current = socket;
 
@@ -74,6 +77,7 @@ println("Nice to meet you, " + name + '!');
   };
 
   const handleStop = () => {
+    if (!isRunning.current) return;
     isRunning.current = false;
     if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
       socketRef.current.send(JSON.stringify({
