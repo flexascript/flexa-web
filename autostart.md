@@ -14,7 +14,7 @@ After=network.target
 Type=simple
 User=root
 ExecStart=/full/path/to/deploy.sh
-WorkingDirectory=/var/www/
+WorkingDirectory=/var/www/flexa-web
 Restart=on-failure
 RestartSec=10
 

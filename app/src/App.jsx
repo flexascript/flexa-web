@@ -142,7 +142,7 @@ println("Nice to meet you, " + name + '!');
         <button className="topbar-btn stop" onClick={handleStop}>⏹ Stop</button>
         <div className="vertical-div"></div>
         <a className="topbar-btn" target="_blank" href="https://flexascript.github.io/">🗎 Docs</a>
-        <a className="topbar-btn" target="_blank" href="https://flexascript.github.io/">💡 Examples</a>
+        <a className="topbar-btn" target="_blank" href="https://flexascript.github.io/docs/advanced-examples">💡 Examples</a>
         <a className="topbar-btn" target="_blank" href="https://github.com/flexascript/interpreter">⚙️ Actual Interpreter</a>
         <a className="topbar-btn" target="_blank" href="https://github.com/flexascript">🌐 FlexaScript GitHub</a>
       </div>
